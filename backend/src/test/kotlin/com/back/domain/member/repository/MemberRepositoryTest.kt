@@ -16,4 +16,10 @@ class MemberRepositoryTest {
         val member = memberRepository.findById(1).get()
         assertThat(member.id).isEqualTo(1)
     }
+
+    @Test
+    fun `findQById()`() {
+        val member = memberRepository.findQById(1).getOrThrow()
+        assertThat(member.id).isEqualTo(1)
+    }
 }
