@@ -47,4 +47,18 @@ class MemberRepositoryTest {
         val memberList = memberRepository.findQByIdIn(listOf(1,2,3))
         assertThat(memberList.map { it.id }).containsAnyOf(1,2,3)
     }
+
+    @Test
+    fun `findByUsernameAndNickname()`() {
+        val member = memberRepository.findByUsernameAndNickname("user1", "유저1").getOrThrow()
+        assertThat(member.username).isEqualTo("user1")
+        assertThat(member.nickname).isEqualTo("유저1")
+    }
+
+    @Test
+    fun `findQByUsernameAndNickname()`() {
+        val member = memberRepository.findQByUsernameAndNickname("user1", "유저1").getOrThrow()
+        assertThat(member.username).isEqualTo("user1")
+        assertThat(member.nickname).isEqualTo("유저1")
+    }
 }
