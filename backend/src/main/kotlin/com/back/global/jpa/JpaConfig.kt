@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class JpaConfig() {
+class JpaConfig {
 
     @PersistenceContext
     private lateinit var entityManager: EntityManager
