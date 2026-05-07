@@ -61,4 +61,10 @@ class MemberRepositoryTest {
         assertThat(member.username).isEqualTo("user1")
         assertThat(member.nickname).isEqualTo("유저1")
     }
+
+    @Test
+    fun `findQByUsernameOrNickname()`() {
+        val memberList = memberRepository.findQByUsernameOrNickname("user1", "유저2")
+        assertThat(memberList.map { it.username }).containsAnyOf("user1", "user2")
+    }
 }
