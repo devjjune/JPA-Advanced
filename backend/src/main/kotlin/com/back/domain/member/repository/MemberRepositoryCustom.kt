@@ -13,4 +13,7 @@ interface MemberRepositoryCustom {
         password: String,
         nickname: String
     ): List<Member>
+    fun findQByNicknameContaining(nickname: String): List<Member>
+    fun countQByNicknameContaining(nickname: String): Long
+    fun existsQByNicknameContaining(nickname: String): Boolean
 }

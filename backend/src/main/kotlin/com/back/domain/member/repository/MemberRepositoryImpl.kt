@@ -76,4 +76,40 @@ class MemberRepositoryImpl(
             )
             .fetch()
     }
+
+    // where nickname LIKE %a%
+    override fun findQByNicknameContaining(nickname: String): List<Member> {
+        val member = QMember.member
+
+        return jpaQueryFactory
+            .selectFrom(member)
+            .where(
+                member.nickname.contains(nickname)
+            )
+            .fetch()
+    }
+
+    override fun countQByNicknameContaining(nickname: String): Long {
+        val member = QMember.member
+
+        return jpaQueryFactory
+            .select(member.count())
+            .from(member)
+            .where(
+                member.nickname.contains(nickname)
+            )
+            .fetchOne() ?: 0L
+    }
+
+    override fun existsQByNicknameContaining(nickname: String): Boolean {
+        val member = QMember.member
+
+        return jpaQueryFactory
+            .selectOne()
+            .from(member)
+            .where(
+                member.nickname.contains(nickname)
+            )
+            .fetchFirst() != null
+    }
 }
