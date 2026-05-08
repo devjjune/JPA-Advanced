@@ -4,8 +4,8 @@ import com.back.domain.member.entity.Member
 import com.back.domain.member.entity.QMember
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.support.PageableExecutionUtils
 
 class MemberRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory,
@@ -116,33 +116,30 @@ class MemberRepositoryImpl(
             .fetchFirst() != null
     }
 
-    // 두 차례 쿼리 실행
     override fun findQByNicknameContaining(nickname: String, pageable: Pageable): Page<Member> {
-        // pageable 객체 안 page, size에 대한 값은 컨트롤러에서 들어옴
+        // pageable 객체 안 page, size 값은 컨트롤러 요청 파라미터를 통해 들어옴
         val member = QMember.member
 
-        // content 쿼리 - 데이터 조회
-        // 현재 페이지에 보여줄 데이터 목록을 가져옴
+        // content 쿼리 - 현재 페이지에 보여줄 데이터 목록 조회
         val result = jpaQueryFactory
             .selectFrom(member)
             .where(member.nickname.contains(nickname))
             .offset(pageable.offset) // 앞에서 몇 개 건너뛸지 (페이지 시작 위치)
             .limit(pageable.pageSize.toLong()) // 한 페이지에 몇 개 가져올지
-            .fetch() // 여러 개의 결과를 리스트로 가져오는 메서드
+            .fetch() // 여러 결과를 List<Member>로 조회
 
-        // totalCount 쿼리 - 전체 개수
-        // 전체 데이터의 개수를 가져옴
-        val totalCount = jpaQueryFactory
-            .select(member.count())
-            .from(member)
-            .where(member.nickname.contains(nickname))
-            .fetchOne() ?: 0L // 결과 1개 반환
-
-        // 페이지 객체 생성
-        return PageImpl(
-            result, // 첫 번째 쿼리 결과, 현재 페이지 데이터 목록
-            pageable, // 매개변수로 받은 페이지 요청 정보 - 페이지 번호, 사이즈
-            totalCount // 두 번째 쿼리 결과, 전체 데이터 개수
-        )
+        // Page 객체 생성
+        return PageableExecutionUtils.getPage(
+            result,
+            pageable
+        ) {
+            // count 쿼리 - 조건에 맞는 전체 데이터 개수 조회
+            // PageableExecutionUtils에 의해 필요한 경우에만 실행됨
+            jpaQueryFactory
+                .select(member.count())
+                .from(member)
+                .where(member.nickname.contains(nickname))
+                .fetchOne() ?: 0L
+        }
     }
 }

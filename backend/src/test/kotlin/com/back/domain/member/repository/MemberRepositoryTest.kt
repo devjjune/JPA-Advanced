@@ -127,4 +127,10 @@ class MemberRepositoryTest {
         assertThat(page.totalElements).isEqualTo(3)
         assertThat(page.totalPages).isEqualTo(2)
     }
+
+    @Test
+    fun `findQByNicknameContaining with Pageable count test`() {
+        val pageable = PageRequest.of(0, 2)
+        val page = memberRepository.findQByNicknameContaining("유저1", pageable)
+    }
 }
